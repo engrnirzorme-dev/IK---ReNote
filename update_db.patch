@@ -1,0 +1,248 @@
+--- services/db.ts
++++ services/db.ts
+@@ -29,14 +29,20 @@
+   throw new Error(JSON.stringify(errInfo));
+ }
+ 
++const getSessionPath = (uid: string, sessionId: string) => {
++    if (!sessionId) return `users/${uid}`; // Fallback just in case
++    return sessionId === 'default' ? `users/${uid}` : `users/${uid}/sessions/${sessionId}`;
++};
++
+ // --- Settings ---
+ export const saveSettingsToDB = async (settings: any) => {
+   try {
+     const uid = getUserId();
+     const docRef = doc(db, `users/${uid}`);
++    // Save activeSessionId along with other settings
+     await setDoc(docRef, settings, { merge: true });
+   } catch (error) {
+     handleFirestoreError(error, OperationType.WRITE, 'users/{uid}');
+   }
+ };
+ 
+@@ -52,15 +58,16 @@
+ };
+ 
+ // --- URL Groups ---
+-export const saveUrlGroupsToDB = async (groups: URLGroup[]) => {
++export const saveUrlGroupsToDB = async (groups: URLGroup[], sessionId: string = 'default') => {
+   try {
+     const uid = getUserId();
++    const basePath = getSessionPath(uid, sessionId);
+     const batch = writeBatch(db);
+     
+     // Due to limitations, we overwrite the whole collection by saving them. 
+     // Deletions need to be handled carefully, for now we just write the active ones.
+     for (const group of groups) {
+-      const docRef = doc(db, `users/${uid}/urlGroups`, group.id);
++      const docRef = doc(db, `${basePath}/urlGroups`, group.id);
+       batch.set(docRef, {
+         ...group,
+         uid
+@@ -73,10 +80,11 @@
+   }
+ };
+ 
+-export const loadUrlGroupsFromDB = async (): Promise<URLGroup[] | null> => {
++export const loadUrlGroupsFromDB = async (sessionId: string = 'default'): Promise<URLGroup[] | null> => {
+   try {
+     const uid = getUserId();
+-    const snapshot = await getDocs(collection(db, `users/${uid}/urlGroups`));
++    const basePath = getSessionPath(uid, sessionId);
++    const snapshot = await getDocs(collection(db, `${basePath}/urlGroups`));
+     if (snapshot.empty) return null;
+     
+     return snapshot.docs.map(docSnap => docSnap.data() as URLGroup);
+@@ -87,13 +95,14 @@
+ };
+ 
+ // --- File Groups ---
+-export const saveFileGroupsToDB = async (groups: FileGroup[]) => {
++export const saveFileGroupsToDB = async (groups: FileGroup[], sessionId: string = 'default') => {
+     try {
+       const uid = getUserId();
++      const basePath = getSessionPath(uid, sessionId);
+       const batch = writeBatch(db);
+       
+       for (const group of groups) {
+-        const docRef = doc(db, `users/${uid}/fileGroups`, group.id);
++        const docRef = doc(db, `${basePath}/fileGroups`, group.id);
+         
+         // We do not save the actual File objects, we save the metadata and base64 preview
+         const serializedFiles = group.files.map(f => ({
+@@ -115,10 +124,11 @@
+     }
+ };
+ 
+-export const loadFileGroupsFromDB = async (): Promise<FileGroup[] | null> => {
++export const loadFileGroupsFromDB = async (sessionId: string = 'default'): Promise<FileGroup[] | null> => {
+     try {
+         const uid = getUserId();
+-        const snapshot = await getDocs(collection(db, `users/${uid}/fileGroups`));
++        const basePath = getSessionPath(uid, sessionId);
++        const snapshot = await getDocs(collection(db, `${basePath}/fileGroups`));
+         if (snapshot.empty) return null;
+         
+         return snapshot.docs.map(docSnap => {
+@@ -141,11 +151,12 @@
+ };
+ 
+ // --- Selections ---
+-export const saveSelectionsToDB = async (urls: string[], fileIds: string[]) => {
++export const saveSelectionsToDB = async (urls: string[], fileIds: string[], sessionId: string = 'default') => {
+   try {
+     const uid = getUserId();
+-    const docRef = doc(db, `users/${uid}`);
+-    await setDoc(docRef, { selectedUrls: urls, selectedFileIds: fileIds, uid }, { merge: true });
++    const basePath = getSessionPath(uid, sessionId);
++    const docRef = doc(db, basePath);
++    await setDoc(docRef, { selectedUrls: urls, selectedFileIds: fileIds }, { merge: true });
+   } catch (error) {
+     handleFirestoreError(error, OperationType.WRITE, 'users/{uid}');
+   }
+@@ -151,10 +162,11 @@
+   }
+ };
+ 
+-export const loadSelectionsFromDB = async (): Promise<any | null> => {
++export const loadSelectionsFromDB = async (sessionId: string = 'default'): Promise<any | null> => {
+   try {
+     const uid = getUserId();
+-    const docSnap = await getDoc(doc(db, `users/${uid}`));
++    const basePath = getSessionPath(uid, sessionId);
++    const docSnap = await getDoc(doc(db, basePath));
+     if (docSnap.exists()) {
+       const data = docSnap.data();
+       return { urls: data.selectedUrls || [], fileIds: data.selectedFileIds || [] };
+@@ -167,13 +179,14 @@
+ };
+ 
+ // --- Notes ---
+-export const saveNotesToDB = async (notes: any[]) => {
++export const saveNotesToDB = async (notes: any[], sessionId: string = 'default') => {
+   try {
+     const uid = getUserId();
++    const basePath = getSessionPath(uid, sessionId);
+     const batch = writeBatch(db);
+     
+     for (const note of notes) {
+-      const docRef = doc(db, `users/${uid}/notes`, note.id);
++      const docRef = doc(db, `${basePath}/notes`, note.id);
+       batch.set(docRef, {
+         ...note,
+         uid,
+@@ -187,10 +200,11 @@
+   }
+ };
+ 
+-export const loadNotesFromDB = async (): Promise<any[] | null> => {
++export const loadNotesFromDB = async (sessionId: string = 'default'): Promise<any[] | null> => {
+   try {
+     const uid = getUserId();
+-    const snapshot = await getDocs(collection(db, `users/${uid}/notes`));
++    const basePath = getSessionPath(uid, sessionId);
++    const snapshot = await getDocs(collection(db, `${basePath}/notes`));
+     if (snapshot.empty) return null;
+     
+     return snapshot.docs.map(docSnap => {
+@@ -206,14 +220,15 @@
+ };
+ 
+ // --- Chat History ---
+-export const saveChatHistoryToDB = async (messages: ChatMessage[]) => {
++export const saveChatHistoryToDB = async (messages: ChatMessage[], sessionId: string = 'default') => {
+   try {
+     const uid = getUserId();
++    const basePath = getSessionPath(uid, sessionId);
+     const batch = writeBatch(db);
+     
+     for (const msg of messages) {
+-      const docRef = doc(db, `users/${uid}/chatHistory`, msg.id);
++      const docRef = doc(db, `${basePath}/chatHistory`, msg.id);
+       batch.set(docRef, {
+         uid,
+         id: msg.id,
+@@ -232,10 +247,11 @@
+   }
+ };
+ 
+-export const loadChatHistoryFromDB = async (): Promise<ChatMessage[] | null> => {
++export const loadChatHistoryFromDB = async (sessionId: string = 'default'): Promise<ChatMessage[] | null> => {
+   try {
+     const uid = getUserId();
+-    const snapshot = await getDocs(collection(db, `users/${uid}/chatHistory`));
++    const basePath = getSessionPath(uid, sessionId);
++    const snapshot = await getDocs(collection(db, `${basePath}/chatHistory`));
+     if (snapshot.empty) return null;
+     
+     return snapshot.docs.map(docSnap => {
+@@ -256,12 +272,50 @@
+   }
+ };
+ 
+-export const clearDB = async () => {
++// --- Sessions ---
++export const saveSessionsToDB = async (sessions: any[]) => {
++  try {
++    const uid = getUserId();
++    const batch = writeBatch(db);
++    for (const session of sessions) {
++      const docRef = doc(db, `users/${uid}/sessions_meta`, session.id);
++      batch.set(docRef, {
++        ...session,
++        uid,
++        lastAccessed: session.lastAccessed.toISOString()
++      });
++    }
++    await batch.commit();
++  } catch (error) {
++    handleFirestoreError(error, OperationType.WRITE, 'users/{uid}/sessions_meta');
++  }
++};
++
++export const loadSessionsFromDB = async (): Promise<any[] | null> => {
++  try {
++    const uid = getUserId();
++    const snapshot = await getDocs(collection(db, `users/${uid}/sessions_meta`));
++    if (snapshot.empty) return null;
++    
++    return snapshot.docs.map(docSnap => {
++      const data = docSnap.data();
++      return {
++        ...data,
++        lastAccessed: new Date(data.lastAccessed)
++      };
++    });
++  } catch (error) {
++    handleFirestoreError(error, OperationType.GET, 'users/{uid}/sessions_meta');
++    return null;
++  }
++};
++
++export const clearDB = async (sessionId: string = 'default') => {
+     try {
+         const uid = getUserId();
++        const basePath = getSessionPath(uid, sessionId);
+         
+         const deleteCollection = async (path: string) => {
+             const snapshot = await getDocs(collection(db, path));
+@@ -273,11 +327,14 @@
+             await batch.commit();
+         };
+         
+-        await deleteCollection(`users/${uid}/urlGroups`);
+-        await deleteCollection(`users/${uid}/fileGroups`);
+-        await deleteCollection(`users/${uid}/chatHistory`);
++        await deleteCollection(`${basePath}/urlGroups`);
++        await deleteCollection(`${basePath}/fileGroups`);
++        await deleteCollection(`${basePath}/chatHistory`);
++        await deleteCollection(`${basePath}/notes`);
+         
+-        await deleteDoc(doc(db, `users/${uid}`));
++        if (sessionId === 'default') {
++          await deleteDoc(doc(db, `users/${uid}`));
++        } else {
++          await deleteDoc(doc(db, basePath));
++        }
+         return true;

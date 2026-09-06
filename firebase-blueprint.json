@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user settings and preferences",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "User ID" },
+        "language": { "type": "string", "enum": ["en", "bn"] },
+        "theme": { "type": "string", "enum": ["dark", "light"] },
+        "voiceSpeed": { "type": "number" },
+        "voiceURI": { "type": "string" },
+        "selectedUrls": { "type": "array", "items": { "type": "string" } },
+        "selectedFileIds": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["uid"]
+    },
+    "URLGroup": {
+      "title": "URL Group",
+      "description": "A group of URLs",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner User ID" },
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "urls": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["uid", "id", "name", "urls"]
+    },
+    "FileGroup": {
+      "title": "File Group",
+      "description": "A group of files",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner User ID" },
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "files": { 
+          "type": "array", 
+          "items": { 
+             "type": "object",
+             "properties": {
+                "id": { "type": "string" },
+                "name": { "type": "string" },
+                "type": { "type": "string" },
+                "data": { "type": "string", "description": "Base64 encoded file data" },
+                "preview": { "type": "string" },
+                "contentHash": { "type": "string" }
+             }
+          } 
+        }
+      },
+      "required": ["uid", "id", "name", "files"]
+    },
+    "ChatMessage": {
+      "title": "Chat Message",
+      "description": "A single chat message",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Owner User ID" },
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "sender": { "type": "string", "enum": ["user", "model", "system"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "urlContext": { "type": "string", "description": "JSON stringified" },
+        "suggestedActions": { "type": "array", "items": { "type": "string" } },
+        "discoveredResources": { "type": "string", "description": "JSON stringified" },
+        "comparisonData": { "type": "string", "description": "JSON stringified" }
+      },
+      "required": ["uid", "id", "text", "sender", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User profiles and settings"
+    },
+    "/users/{userId}/urlGroups/{groupId}": {
+      "schema": { "$ref": "#/entities/URLGroup" },
+      "description": "URL groups owned by the user"
+    },
+    "/users/{userId}/fileGroups/{groupId}": {
+      "schema": { "$ref": "#/entities/FileGroup" },
+      "description": "File groups owned by the user"
+    },
+    "/users/{userId}/chatHistory/{messageId}": {
+      "schema": { "$ref": "#/entities/ChatMessage" },
+      "description": "Chat messages owned by the user"
+    }
+  }
+}

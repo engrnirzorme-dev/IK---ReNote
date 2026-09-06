@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == request.auth.uid;
+    }
+    function uidNotModified() {
+      return !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid;
+    }
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    // ===============================================================
+    // Rules
+    // ===============================================================
+    match /users/{userId} {
+      // Allow read/write to the user's document
+      allow read, write: if isOwner(userId);
+      
+      match /urlGroups/{groupId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /fileGroups/{groupId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /chatHistory/{messageId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /notes/{noteId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /sessions_meta/{sessionId} {
+        allow read, write: if isOwner(userId);
+      }
+      match /sessions/{sessionId}/{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+  }
+}
