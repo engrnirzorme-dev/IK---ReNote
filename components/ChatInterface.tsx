@@ -263,22 +263,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
   if (activeMode === 'compare') activePlaceholder = t.comparisonPlaceholder;
 
   return (
-    <div className="flex flex-col h-full bg-[#1E1E1E] rounded-xl shadow-md border border-[rgba(255,255,255,0.05)] relative">
-      <div className="p-4 border-b border-[rgba(255,255,255,0.05)] flex justify-between items-center relative">
-        <div className="flex items-center gap-3">
+    <div className="flex flex-col h-full max-h-full overflow-hidden bg-[#1E1E1E] rounded-xl shadow-md border border-[rgba(255,255,255,0.05)] relative">
+      <div className="p-2.5 sm:p-4 border-b border-[rgba(255,255,255,0.05)] flex justify-between items-center relative gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
            {onToggleSidebar && (
             <button 
               onClick={onToggleSidebar}
-              className="p-1.5 text-[#A8ABB4] hover:text-white rounded-md hover:bg-white/10 transition-colors md:hidden"
+              className="p-1 sm:p-1.5 text-[#A8ABB4] hover:text-white rounded-md hover:bg-white/10 transition-colors md:hidden flex-shrink-0"
               aria-label="Open knowledge base"
             >
-              <Menu size={20} />
+              <Menu size={18} className="sm:w-5 sm:h-5" />
             </button>
           )}
-          <div>
-            <h2 className="text-xl font-semibold text-[#E2E2E2] flex items-center gap-2">
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-xl font-semibold text-[#E2E2E2] flex items-center gap-1.5 sm:gap-2 truncate">
                 Docs & Files
-                <span className="text-xs bg-[#2C2C2C] border border-white/[.1] px-2 py-0.5 rounded-full text-[#A8ABB4] flex items-center gap-1">
+                <span className="text-[10px] sm:text-xs bg-[#2C2C2C] border border-white/[.1] px-1.5 sm:px-2 py-0.5 rounded-full text-[#A8ABB4] flex items-center gap-1 flex-shrink-0">
                     <Layers size={10} />
                     {activeUrls?.length || 0} Links, {activeFileCount} Files
                 </span>
@@ -286,22 +286,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             <button 
                 onClick={() => setIsSettingsOpen(true)}
-                className="p-1.5 text-[#A8ABB4] hover:text-white rounded-md hover:bg-white/10 transition-colors"
+                className="p-1 sm:p-1.5 text-[#A8ABB4] hover:text-white rounded-md hover:bg-white/10 transition-colors"
                 title={t.settings}
             >
-                <Settings size={20} />
+                <Settings size={18} className="sm:w-5 sm:h-5" />
             </button>
 
             <div className="relative" ref={exportMenuRef}>
             <button
                 onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[#A8ABB4] bg-white/[.05] hover:bg-white/[.1] hover:text-white rounded-lg transition-colors border border-white/[.05]"
+                className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-medium text-[#A8ABB4] bg-white/[.05] hover:bg-white/[.1] hover:text-white rounded-lg transition-colors border border-white/[.05]"
                 title={t.exportChat}
             >
-                <Download size={16} />
+                <Download size={14} className="sm:w-4 sm:h-4" />
                 <span className="hidden sm:inline">{t.exportChat}</span>
             </button>
             
@@ -330,8 +330,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </div>
 
-      <div className="flex-grow p-4 overflow-y-auto overflow-x-hidden chat-container bg-[#282828] relative">
-        <div className="max-w-4xl mx-auto w-full h-full flex flex-col">
+      <div className="flex-grow flex-1 min-h-0 max-h-full overflow-hidden overflow-y-auto overflow-x-hidden p-2 sm:p-3 md:p-4 chat-container bg-[#282828] relative">
+        <div className="max-w-4xl mx-auto w-full min-w-0 max-h-full flex flex-col">
           
           {messages.map((msg) => (
             <MessageItem 
@@ -347,28 +347,28 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
           ))}
           
           {isFetchingSuggestions && messages.length <= 1 && (
-              <div className="flex justify-center items-center p-10">
-                  <div className="flex flex-col items-center space-y-3 text-[#A8ABB4]">
-                      <Sparkles className="w-8 h-8 animate-pulse text-[#79B8FF]" />
-                      <span className="text-sm">{t.analyzingSuggestions}</span>
+              <div className="flex justify-center items-center p-6 sm:p-10">
+                  <div className="flex flex-col items-center space-y-2 sm:space-y-3 text-[#A8ABB4]">
+                      <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 animate-pulse text-[#79B8FF]" />
+                      <span className="text-xs sm:text-sm">{t.analyzingSuggestions}</span>
                   </div>
               </div>
           )}
 
           {showHeroSuggestions && onSuggestedQueryClick && (
-             <div className="flex-grow flex flex-col justify-center items-center pb-20 animate-in fade-in duration-500">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-[#E2E2E2] mb-2">{t.heroTitle}</h3>
-                  <p className="text-[#A8ABB4]">{t.heroSubtitle}</p>
+             <div className="flex-grow flex flex-col justify-center items-center py-6 sm:py-10 pb-12 sm:pb-20 animate-in fade-in duration-500">
+                <div className="text-center mb-4 sm:mb-8 px-2">
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#E2E2E2] mb-1.5 sm:mb-2">{t.heroTitle}</h3>
+                  <p className="text-xs sm:text-sm text-[#A8ABB4]">{t.heroSubtitle}</p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl px-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-4 w-full max-w-2xl px-2 sm:px-4">
                   {initialQuerySuggestions!.map((suggestion, index) => (
                     <button
                       key={index}
                       onClick={() => onSuggestedQueryClick(suggestion)}
-                      className="p-4 bg-[#333] hover:bg-[#3D3D3D] border border-white/[.05] rounded-xl text-left transition-all hover:scale-[1.02] hover:shadow-lg group"
+                      className="p-3 sm:p-4 bg-[#333] hover:bg-[#3D3D3D] border border-white/[.05] rounded-xl text-left transition-all hover:scale-[1.01] sm:hover:scale-[1.02] hover:shadow-lg group"
                     >
-                      <span className="text-[#E2E2E2] text-sm font-medium group-hover:text-[#79B8FF] transition-colors">
+                      <span className="text-[#E2E2E2] text-xs sm:text-sm font-medium group-hover:text-[#79B8FF] transition-colors">
                         {suggestion}
                       </span>
                     </button>
@@ -381,18 +381,18 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
         </div>
       </div>
 
-      <div className="p-4 border-t border-[rgba(255,255,255,0.05)] bg-[#1E1E1E] rounded-b-xl relative">
+      <div className="p-2 sm:p-3 md:p-4 border-t border-[rgba(255,255,255,0.05)] bg-[#1E1E1E] rounded-b-xl relative flex-shrink-0">
         
         {activeMode !== 'chat' && (
-            <div className="absolute -top-3 left-6 z-10">
-                 <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-in slide-in-from-bottom-2 ${
+            <div className="absolute -top-3 left-3 sm:left-6 z-10">
+                 <div className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full text-[11px] sm:text-xs font-bold shadow-lg animate-in slide-in-from-bottom-2 ${
                      activeMode === 'research' ? 'bg-[#79B8FF] text-[#1E1E1E]' : 'bg-[#eab308] text-[#1E1E1E]' 
                  }`}>
                      {activeMode === 'research' ? <Globe size={12} /> : <Scale size={12} />}
-                     <span className="max-w-[150px] truncate">{activeMode === 'research' ? t.deepResearch : t.comparisonMode}</span>
+                     <span className="max-w-[120px] sm:max-w-[150px] truncate">{activeMode === 'research' ? t.deepResearch : t.comparisonMode}</span>
                      <button 
                         onClick={() => setActiveMode('chat')}
-                        className="ml-1 hover:bg-black/10 rounded-full p-0.5"
+                        className="ml-0.5 sm:ml-1 hover:bg-black/10 rounded-full p-0.5"
                      >
                         <X size={10} />
                      </button>
@@ -400,61 +400,61 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
             </div>
         )}
 
-        <div className="flex items-end gap-2">
+        <div className="flex items-end gap-1.5 sm:gap-2">
             
-          <div className="flex bg-white/[.05] rounded-lg p-1 gap-1 flex-shrink-0">
+          <div className="flex bg-white/[.05] rounded-lg p-0.5 sm:p-1 gap-0.5 sm:gap-1 flex-shrink-0">
               <button
                 onClick={() => setActiveMode(activeMode === 'research' ? 'chat' : 'research')}
-                className={`p-2 rounded-md transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md transition-all ${
                     activeMode === 'research'
                     ? 'bg-[#79B8FF] text-[#1E1E1E] shadow-sm' 
                     : 'text-[#A8ABB4] hover:text-white hover:bg-white/[.1]'
                 }`}
                 title={t.deepResearch}
               >
-                 <Globe size={18} />
+                 <Globe className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </button>
 
               <button
                 onClick={() => setActiveMode(activeMode === 'compare' ? 'chat' : 'compare')}
-                className={`p-2 rounded-md transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md transition-all ${
                     activeMode === 'compare'
                     ? 'bg-[#eab308] text-[#1E1E1E] shadow-sm' 
                     : 'text-[#A8ABB4] hover:text-white hover:bg-white/[.1]'
                 }`}
                 title={t.comparisonMode}
               >
-                 <Scale size={18} />
+                 <Scale className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </button>
 
               <button
                 onClick={onToggleThinkingMode}
-                className={`p-2 rounded-md transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md transition-all ${
                     isThinkingMode
                     ? 'bg-purple-500 text-white shadow-sm' 
                     : 'text-[#A8ABB4] hover:text-white hover:bg-white/[.1]'
                 }`}
                 title={t.thinkingMode}
               >
-                 <Brain size={18} />
+                 <Brain className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </button>
 
               <button
                 onClick={onToggleMaps}
-                className={`p-2 rounded-md transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md transition-all ${
                     useMaps
                     ? 'bg-green-500 text-white shadow-sm' 
                     : 'text-[#A8ABB4] hover:text-white hover:bg-white/[.1]'
                 }`}
                 title={t.mapsGrounding}
               >
-                 <MapPin size={18} />
+                 <MapPin className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
               </button>
           </div>
 
           <div className="flex-grow flex flex-col relative min-w-0">
               {isTranscribing && (
-                  <div className="absolute -top-6 left-2 text-[10px] text-[#79B8FF] flex items-center gap-1 animate-pulse">
+                  <div className="absolute -top-5 sm:-top-6 left-1 sm:left-2 text-[10px] text-[#79B8FF] flex items-center gap-1 animate-pulse">
                       <Loader2 size={10} className="animate-spin" />
                       {t.transcribing}
                   </div>
@@ -463,7 +463,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
                 value={userQuery}
                 onChange={(e) => setUserQuery(e.target.value)}
                 placeholder={activePlaceholder}
-                className={`w-full h-10 min-h-[40px] py-2 px-3 border border-[rgba(255,255,255,0.1)] bg-[#2C2C2C] text-[#E2E2E2] placeholder-[#777777] rounded-lg focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all resize-none text-sm ${
+                className={`w-full h-9 sm:h-10 min-h-[36px] sm:min-h-[40px] py-1.5 sm:py-2 px-2.5 sm:px-3 border border-[rgba(255,255,255,0.1)] bg-[#2C2C2C] text-[#E2E2E2] placeholder-[#777777] rounded-lg focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all resize-none text-xs sm:text-sm ${
                     activeMode === 'research' ? 'ring-1 ring-[#79B8FF] border-[#79B8FF]/50' : 
                     activeMode === 'compare' ? 'ring-1 ring-[#eab308] border-[#eab308]/50' : 
                     isThinkingMode ? 'ring-1 ring-purple-500 border-purple-500/50' : ''
@@ -479,29 +479,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({
               />
           </div>
 
-          <div className="flex gap-1">
+          <div className="flex gap-1 sm:gap-1.5 flex-shrink-0">
               <button
                 onClick={isRecording ? stopRecording : startRecording}
                 disabled={isLoading || isTranscribing}
-                className={`h-10 w-10 p-2 rounded-lg transition-all flex items-center justify-center flex-shrink-0 ${
+                className={`h-9 w-9 sm:h-10 sm:w-10 p-1.5 sm:p-2 rounded-lg transition-all flex items-center justify-center flex-shrink-0 ${
                     isRecording 
                     ? 'bg-red-500 text-white animate-pulse' 
                     : 'bg-white/[.05] text-[#A8ABB4] hover:bg-white/[.1] hover:text-white'
                 }`}
                 title={t.voiceMode}
               >
-                {isRecording ? <MicOff size={18} /> : <Mic size={18} />}
+                {isRecording ? <MicOff className="w-4 h-4 sm:w-[18px] sm:h-[18px]" /> : <Mic className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />}
               </button>
 
               <button
                 onClick={handleSend}
                 disabled={isLoading || !userQuery.trim() || isTranscribing}
-                className="h-10 w-10 p-2 bg-white/[.12] hover:bg-white/20 text-white rounded-lg transition-colors disabled:bg-[#4A4A4A] disabled:text-[#777777] flex items-center justify-center flex-shrink-0"
+                className="h-9 w-9 sm:h-10 sm:w-10 p-1.5 sm:p-2 bg-white/[.12] hover:bg-white/20 text-white rounded-lg transition-colors disabled:bg-[#4A4A4A] disabled:text-[#777777] flex items-center justify-center flex-shrink-0"
                 aria-label="Send message"
               >
                 {(isLoading && messages[messages.length-1]?.isLoading && messages[messages.length-1]?.sender === MessageSender.MODEL) ? 
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> 
-                  : <Send size={18} />
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> 
+                  : <Send className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                 }
               </button>
           </div>

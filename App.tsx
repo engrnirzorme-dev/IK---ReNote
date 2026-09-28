@@ -950,8 +950,8 @@ const App: React.FC = () => {
       )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col h-full relative">
-        <div className="flex-1 p-2 md:p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col h-full max-h-full overflow-hidden relative min-h-0">
+        <div className="flex-1 p-1 sm:p-2 md:p-4 overflow-hidden max-h-full flex flex-col min-h-0">
           <ChatInterface 
             messages={chatMessages} 
             onSendMessage={handleSendMessage}

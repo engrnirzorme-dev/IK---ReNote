@@ -395,7 +395,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
     return <div className={`whitespace-pre-wrap text-sm ${textColorClass} break-words min-w-0`}>{message.text}</div>;
   };
   
-  let bubbleClasses = "p-3 rounded-lg shadow w-full min-w-0 break-words "; // Added min-w-0 break-words
+  let bubbleClasses = "p-2.5 sm:p-3 md:p-3.5 rounded-lg shadow w-full min-w-0 max-h-full break-words overflow-hidden "; // Added responsive padding, min-w-0 break-words and overflow-hidden
 
   if (isUser) {
     bubbleClasses += "bg-white/[.12] text-white rounded-br-none";
@@ -406,10 +406,10 @@ const MessageItem: React.FC<MessageItemProps> = ({
   }
 
   return (
-    <div className={`flex mb-4 ${isUser ? 'justify-end' : 'justify-start'}`}>
-      <div className={`flex items-start gap-2 max-w-[95%] md:max-w-[85%]`}>
+    <div className={`flex mb-2.5 sm:mb-4 ${isUser ? 'justify-end' : 'justify-start'} w-full overflow-hidden max-h-full`}>
+      <div className={`flex items-start gap-1.5 sm:gap-2 max-w-[98%] sm:max-w-[90%] md:max-w-[85%] min-w-0 overflow-hidden`}>
         {!isUser && <SenderAvatar sender={message.sender} />}
-        <div className="flex flex-col gap-2 w-full min-w-0">
+        <div className="flex flex-col gap-1.5 sm:gap-2 w-full min-w-0 overflow-hidden">
           <div className={bubbleClasses}>
             {message.isLoading ? (
               <div className="flex items-center space-x-1.5">
@@ -463,39 +463,39 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
             {/* Actions Toolbar for AI messages */}
             {isModel && !message.isLoading && (
-              <div className="flex items-center gap-3 mt-3 pt-2 border-t border-[rgba(255,255,255,0.05)]">
+              <div className="flex flex-wrap items-center gap-1.5 sm:gap-2.5 md:gap-3 mt-2.5 sm:mt-3 pt-2 border-t border-[rgba(255,255,255,0.05)]">
                  <button 
                   onClick={handleSpeak}
                   disabled={isGeneratingAudio}
-                  className={`p-1.5 rounded-md transition-colors ${isPlaying || isGeneratingAudio ? 'text-[#79B8FF] bg-[#79B8FF]/10' : 'text-[#777] hover:text-white hover:bg-white/[.05]'}`}
+                  className={`p-1 sm:p-1.5 rounded-md transition-colors flex items-center justify-center ${isPlaying || isGeneratingAudio ? 'text-[#79B8FF] bg-[#79B8FF]/10' : 'text-[#777] hover:text-white hover:bg-white/[.05]'}`}
                   title={isPlaying ? t.stop : t.play}
                  >
-                   {isGeneratingAudio ? <Loader2 size={16} className="animate-spin" /> : isPlaying ? <StopCircle size={16} /> : <Volume2 size={16} />}
+                   {isGeneratingAudio ? <Loader2 size={15} className="animate-spin sm:w-4 sm:h-4" /> : isPlaying ? <StopCircle size={15} className="sm:w-4 sm:h-4" /> : <Volume2 size={15} className="sm:w-4 sm:h-4" />}
                  </button>
                  
                  <button 
                   onClick={handleCopy}
-                  className="p-1.5 text-[#777] hover:text-white hover:bg-white/[.05] rounded-md transition-colors"
+                  className="p-1 sm:p-1.5 text-[#777] hover:text-white hover:bg-white/[.05] rounded-md transition-colors flex items-center justify-center"
                   title={isCopied ? t.copied : t.copy}
                  >
-                   {isCopied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
+                   {isCopied ? <Check size={15} className="text-green-500 sm:w-4 sm:h-4" /> : <Copy size={15} className="sm:w-4 sm:h-4" />}
                  </button>
 
                  <button 
                   onClick={handleDownload}
-                  className="p-1.5 text-[#777] hover:text-white hover:bg-white/[.05] rounded-md transition-colors"
+                  className="p-1 sm:p-1.5 text-[#777] hover:text-white hover:bg-white/[.05] rounded-md transition-colors flex items-center justify-center"
                   title={t.downloadSingle}
                  >
-                   <Download size={16} />
+                   <Download size={15} className="sm:w-4 sm:h-4" />
                  </button>
 
                  {onSaveNote && (
                    <button 
                      onClick={handleSaveToNotes}
-                     className={`p-1.5 rounded-md transition-colors ${isNoteSaved ? 'text-green-500 bg-green-500/10' : 'text-[#777] hover:text-white hover:bg-white/[.05]'}`}
+                     className={`p-1 sm:p-1.5 rounded-md transition-colors flex items-center justify-center ${isNoteSaved ? 'text-green-500 bg-green-500/10' : 'text-[#777] hover:text-white hover:bg-white/[.05]'}`}
                      title={isNoteSaved ? t.noteSaved : t.saveToNotes}
                    >
-                     {isNoteSaved ? <Check size={16} /> : <Save size={16} />}
+                     {isNoteSaved ? <Check size={15} className="sm:w-4 sm:h-4" /> : <Save size={15} className="sm:w-4 sm:h-4" />}
                    </button>
                  )}
               </div>
@@ -504,14 +504,14 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
           {/* Suggested Actions */}
           {isModel && message.suggestedActions && message.suggestedActions.length > 0 && onSuggestedActionClick && (
-              <div className="flex flex-col gap-1.5 animate-in slide-in-from-top-2 duration-300">
+              <div className="flex flex-col gap-1 sm:gap-1.5 animate-in slide-in-from-top-2 duration-300">
                   <p className="text-[10px] font-bold text-[#777777] uppercase tracking-wider ml-1">{t.suggestedActions}</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                       {message.suggestedActions.map((action, idx) => (
                           <button
                               key={idx}
                               onClick={() => onSuggestedActionClick(action)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-[#2C2C2C] border border-white/[.1] hover:bg-white/[.08] hover:border-[#79B8FF]/50 rounded-2xl text-xs text-[#E2E2E2] transition-all text-left whitespace-normal break-words h-auto"
+                              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 bg-[#2C2C2C] border border-white/[.1] hover:bg-white/[.08] hover:border-[#79B8FF]/50 rounded-2xl text-[11px] sm:text-xs text-[#E2E2E2] transition-all text-left whitespace-normal break-words h-auto"
                           >
                               <span>{action}</span>
                               <ArrowRight size={10} className="text-[#79B8FF]" />
