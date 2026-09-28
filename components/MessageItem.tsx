@@ -395,7 +395,7 @@ const MessageItem: React.FC<MessageItemProps> = ({
     return <div className={`whitespace-pre-wrap text-sm ${textColorClass} break-words min-w-0`}>{message.text}</div>;
   };
   
-  let bubbleClasses = "p-2.5 sm:p-3 md:p-3.5 rounded-lg shadow w-full min-w-0 max-h-full break-words overflow-hidden "; // Added responsive padding, min-w-0 break-words and overflow-hidden
+  let bubbleClasses = "p-2.5 sm:p-3 md:p-3.5 rounded-lg shadow w-full min-w-0 break-words "; // Full height natural expansion without clipping
 
   if (isUser) {
     bubbleClasses += "bg-white/[.12] text-white rounded-br-none";
@@ -406,10 +406,10 @@ const MessageItem: React.FC<MessageItemProps> = ({
   }
 
   return (
-    <div className={`flex mb-2.5 sm:mb-4 ${isUser ? 'justify-end' : 'justify-start'} w-full overflow-hidden max-h-full`}>
-      <div className={`flex items-start gap-1.5 sm:gap-2 max-w-[98%] sm:max-w-[90%] md:max-w-[85%] min-w-0 overflow-hidden`}>
+    <div className={`flex mb-3 sm:mb-4 ${isUser ? 'justify-end' : 'justify-start'} w-full`}>
+      <div className={`flex items-start gap-1.5 sm:gap-2 max-w-[98%] sm:max-w-[90%] md:max-w-[85%] min-w-0`}>
         {!isUser && <SenderAvatar sender={message.sender} />}
-        <div className="flex flex-col gap-1.5 sm:gap-2 w-full min-w-0 overflow-hidden">
+        <div className="flex flex-col gap-1.5 sm:gap-2 w-full min-w-0">
           <div className={bubbleClasses}>
             {message.isLoading ? (
               <div className="flex items-center space-x-1.5">
